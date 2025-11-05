@@ -2,114 +2,53 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
-
+use App\Services\AuthServiceInterface;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
 use Illuminate\Routing\Controller;
 
+
+// controller handles incoming requests and sends responses
+// controller validate data and calls the service layer for business logic
 class AuthController extends Controller
 {
-    public function __construct()
+    protected AuthServiceInterface $authService;
+
+    public function __construct(AuthServiceInterface $authService)
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register', 'refresh', 'logout']]);
+        $this->authService = $authService; 
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
-    public function register(Request $request)
+    public function register(RegisterRequest $request) //full name. .... 
     {
-        // Validate the request
-        $request->validate([
-            'full_name'    => 'required|string|max:255',
-            'email'        => 'required|string|email|max:255|unique:users',
-            'phone_number' => 'required|string|max:20',
-            'address'      => 'required|string|max:255',
-            'password'     => 'required|string|min:6|confirmed',
-            'image'        => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+        $validatedData = $request->validated(); // Get validated data
+        $result = $this->authService->register($validatedData);
 
-        // Handle image upload if exists
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('users', 'public');
-        }
-
-        // Create the user
-        $user = User::create([
-            'full_name'    => $request->full_name,
-            'email'        => $request->email,
-            'phone_number' => $request->phone_number,
-            'address'      => $request->address,
-            'image'        => $imagePath,
-            'password'     => Hash::make($request->password),
-        ]);
-
-        return response()->json(['message' => 'User registered successfully'], 201);
-
-        // Create JWT token
-        $token = Auth::guard('api')->login($user);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'User created successfully',
-            'user' => $user,
-            'authorisation' => [
-                'token' => $token,
-                'type' => 'bearer',
-            ],
-        ] );    
+        return response()->json($result, 201);
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $request->validate([
-            'email'    => 'required|string|email',
-            'password' => 'required|string',
-        ]);
+        $result = $this->authService->login($request->validated());
 
-        $credentials = $request->only('email', 'password');
-        $token = Auth::guard('api')->attempt($credentials);
-
-        if (!$token) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Unauthorized',
-            ], 401);
-        }
-
-        $user = Auth::guard('api')->user();
-        return response()->json([
-            'status' => 'success',
-            'user' => $user,
-            'authorisation' => [
-                'token' => $token,
-                'type' => 'bearer',
-            ],
-        ]);
+        $statusCode = $result['status'] === 'error' ? 401 : 200;
+        
+        return response()->json($result, $statusCode);
     }
 
     public function logout()
     {
-        Auth::guard('api')->logout();
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Successfully logged out',
-        ]);
+        $result = $this->authService->logout();
+        
+        return response()->json($result);
     }
 
     public function refresh()
     {
-        $user = Auth::guard('api')->user();
-        // $token = Auth::guard('api')->refresh();
-
-        return response()->json([
-            'status' => 'success',
-            'user' => $user,
-            'authorisation' => [
-                // 'token' => $token,
-                'type' => 'bearer',
-            ],
-        ]);
+        $result = $this->authService->refresh();
+        
+        return response()->json($result);
     }
+    
 }

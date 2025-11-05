@@ -1,118 +1,78 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Services\TaskServiceInterface;
+use App\Http\Requests\Task\StoreTaskRequest;
+use App\Http\Requests\Task\UpdateTaskRequest;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Task;
-use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class taskController extends Controller
 {
-    // Get all tasks for the authenticated user
-    public function index()
-    {
-       $user = Auth::user();
-       $tasks = $user->tasks;
+    protected TaskServiceInterface $taskService;
 
-        return response()->json([
-            'success' => true,
-            'data' => $tasks
-        ]);
+    public function __construct(TaskServiceInterface $taskService)
+    {
+        $this->taskService = $taskService;
+        $this->middleware('auth:api');
     }
 
-    // Get a specific task for the authenticated user
+    /**
+     * Get all tasks for the authenticated user
+     */
+    public function index()
+    {
+        $user = Auth::user();
+        $result = $this->taskService->getAllTasks($user);
+
+        return response()->json($result);
+    }
+
+    /**
+     * Get a specific task for the authenticated user
+     */
     public function show($id)
     {
         $user = Auth::user();
-        $task = $user->tasks()->find($id);
+        $result = $this->taskService->getTask($user, $id);
 
-        if (!$task) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Task not found'
-            ], 404);
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => $task
-        ]);
+        $statusCode = $result['success'] ? 200 : 404;
+        return response()->json($result, $statusCode);
     }
 
-    // Create a new task for the authenticated user
-    public function store(Request $request)
+    /**
+     * Create a new task for the authenticated user
+     */
+    public function store(StoreTaskRequest $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'nullable|in:pending,in_progress,completed'
-        ]);
-
         $user = Auth::user();
-        
-        $task = $user->tasks()->create([
-            'title' => $request->title,
-            'description' => $request->description ?? '',
-            'status' => $request->status ?? 'pending'
-        ]);
+        $result = $this->taskService->createTask($user, $request->validated());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Task created successfully',
-            'data' => $task
-        ], 201);
+        return response()->json($result, 201);
     }
 
-    // Update a specific task for the authenticated user
-    public function update(Request $request, $id)
+    /**
+     * Update a specific task for the authenticated user
+     */
+    public function update(UpdateTaskRequest $request, $id)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'nullable|in:pending,in_progress,completed'
-        ]);
-
         $user = Auth::user();
-        $task = $user->tasks()->find($id);
+        $result = $this->taskService->updateTask($user, $id, $request->validated());
 
-        if (!$task) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Task not found'
-            ], 404);
-        }
-
-        $task->update([
-            'title' => $request->title,
-            'description' => $request->description ?? $task->description,
-            'status' => $request->status ?? $task->status
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Task updated successfully',
-            'data' => $task
-        ]);
+        $statusCode = $result['success'] ? 200 : 404;
+        return response()->json($result, $statusCode);
     }
 
-    // Delete a specific task for the authenticated user
+    /**
+     * Delete a specific task for the authenticated user
+     */
     public function destroy($id)
     {
         $user = Auth::user();
-        $task = $user->tasks()->find($id);
+        $result = $this->taskService->deleteTask($user, $id);
 
-        if (!$task) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Task not found'
-            ], 404);
-        }
-
-        $task->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Task deleted successfully'
-        ]);
+        $statusCode = $result['success'] ? 200 : 404;
+        return response()->json($result, $statusCode);
     }
 }
