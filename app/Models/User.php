@@ -47,11 +47,23 @@ class User extends Authenticatable implements JWTSubject
       ];
     }
 
-    public function tasks():HasMany
+    public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
     }
 
-   
-   
+    public function assignedTasks(): HasMany
+    {
+        return $this->hasMany(Task::class, 'assigned_to');
+    }
+
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    public function unreadNotifications(): HasMany
+    {
+        return $this->hasMany(Notification::class)->whereNull('read_at');
+    }
 }
