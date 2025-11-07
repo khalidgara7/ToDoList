@@ -1,64 +1,84 @@
 <template>
-  <div class="auth-container">
-    <div class="auth-card">
-      <h2>Connexion</h2>
-      
-      <form @submit.prevent="handleSubmit" class="auth-form">
-        <div class="form-group">
-          <label for="email">Email *</label>
-          <input
-            id="email"
-            v-model="form.email"
-            type="email"
-            placeholder="Votre email"
-            :class="{ error: errors.email }"
-            @blur="validateField('email')"
-          />
-          <span v-if="errors.email" class="error-message">{{ errors.email }}</span>
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
+    <div class="w-full max-w-md">
+      <div class="bg-white rounded-xl shadow-lg p-8">
+        <h2 class="text-3xl font-bold text-center text-gray-900 mb-8">Connexion</h2>
+        
+        <form @submit.prevent="handleSubmit" class="space-y-6">
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+              Email *
+            </label>
+            <input
+              id="email"
+              v-model="form.email"
+              type="email"
+              placeholder="Votre email"
+              :class="[
+                'w-full px-4 py-3 border rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+                errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:border-primary-500'
+              ]"
+              @blur="validateField('email')"
+            />
+            <p v-if="errors.email" class="mt-2 text-sm text-red-600">{{ errors.email }}</p>
+          </div>
+
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+              Mot de passe *
+            </label>
+            <input
+              id="password"
+              v-model="form.password"
+              type="password"
+              placeholder="Votre mot de passe"
+              :class="[
+                'w-full px-4 py-3 border rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+                errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:border-primary-500'
+              ]"
+              @blur="validateField('password')"
+            />
+            <p v-if="errors.password" class="mt-2 text-sm text-red-600">{{ errors.password }}</p>
+          </div>
+
+          <div class="flex items-center">
+            <input 
+              id="rememberMe"
+              type="checkbox" 
+              v-model="form.rememberMe"
+              class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+            />
+            <label for="rememberMe" class="ml-2 block text-sm text-gray-700">
+              Se souvenir de moi
+            </label>
+          </div>
+
+          <div v-if="authStore.error" class="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p class="text-sm text-red-600 text-center">{{ authStore.error }}</p>
+          </div>
+
+          <button 
+            type="submit" 
+            :disabled="authStore.loading || !isFormValid"
+            class="w-full bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+          >
+            {{ authStore.loading ? 'Connexion...' : 'Se connecter' }}
+          </button>
+        </form>
+
+        <div class="mt-8 space-y-4 text-center">
+          <p class="text-sm text-gray-600">
+            Pas encore de compte ? 
+            <router-link to="/register" class="text-primary-600 hover:text-primary-700 font-medium">
+              S'inscrire
+            </router-link>
+          </p>
+          <p class="text-sm">
+            <a href="#" @click.prevent="handleForgotPassword" class="text-primary-600 hover:text-primary-700">
+              Mot de passe oublié ?
+            </a>
+          </p>
         </div>
-
-        <div class="form-group">
-          <label for="password">Mot de passe *</label>
-          <input
-            id="password"
-            v-model="form.password"
-            type="password"
-            placeholder="Votre mot de passe"
-            :class="{ error: errors.password }"
-            @blur="validateField('password')"
-          />
-          <span v-if="errors.password" class="error-message">{{ errors.password }}</span>
-        </div>
-
-        <div class="form-group">
-          <label class="checkbox-group">
-            <input type="checkbox" v-model="form.rememberMe" />
-            <span class="checkmark"></span>
-            Se souvenir de moi
-          </label>
-        </div>
-
-        <div v-if="authStore.error" class="error-message global-error">
-          {{ authStore.error }}
-        </div>
-
-        <button 
-          type="submit" 
-          class="auth-button"
-          :disabled="authStore.loading || !isFormValid"
-        >
-          {{ authStore.loading ? 'Connexion...' : 'Se connecter' }}
-        </button>
-      </form>
-
-      <div class="auth-links">
-        <p class="auth-link">
-          Pas encore de compte ? 
-          <router-link to="/register">S'inscrire</router-link>
-        </p>
-        <p class="auth-link">
-          <a href="#" @click.prevent="handleForgotPassword">Mot de passe oublié ?</a>
-        </p>
       </div>
     </div>
   </div>
@@ -132,9 +152,6 @@ const handleSubmit = async () => {
       rememberMe: form.rememberMe
     })
     
-    // Récupérer les informations de l'utilisateur après connexion
-    await authStore.fetchUser()
-    
     router.push('/')
   } catch (error) {
     console.error('Erreur lors de la connexion:', error)
@@ -152,132 +169,4 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.auth-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
-}
-
-.auth-card {
-  background: white;
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-}
-
-.auth-card h2 {
-  text-align: center;
-  margin-bottom: 30px;
-  color: #333;
-  font-size: 28px;
-  font-weight: 600;
-}
-
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: #555;
-}
-
-.form-group input[type="email"],
-.form-group input[type="password"] {
-  padding: 12px;
-  border: 2px solid #e1e5e9;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 0.3s ease;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
-.form-group input.error {
-  border-color: #e74c3c;
-}
-
-.checkbox-group {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  font-size: 14px;
-  color: #666;
-}
-
-.checkbox-group input[type="checkbox"] {
-  margin-right: 8px;
-  transform: scale(1.1);
-}
-
-.error-message {
-  color: #e74c3c;
-  font-size: 14px;
-  margin-top: 5px;
-}
-
-.global-error {
-  text-align: center;
-  padding: 10px;
-  background: #fee;
-  border-radius: 4px;
-}
-
-.auth-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  padding: 15px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.auth-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-}
-
-.auth-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.auth-links {
-  margin-top: 30px;
-}
-
-.auth-link {
-  text-align: center;
-  margin: 10px 0;
-  color: #666;
-  font-size: 14px;
-}
-
-.auth-link a {
-  color: #667eea;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.auth-link a:hover {
-  text-decoration: underline;
-}
 </style>

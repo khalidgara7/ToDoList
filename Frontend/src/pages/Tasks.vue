@@ -1,177 +1,149 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <!-- Header moderne avec statistiques -->
+    <!-- Simple Header -->
     <div class="bg-white shadow-sm border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="py-6">
-          <!-- Titre et bouton d'ajout -->
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-            <div>
-              <h1 class="text-3xl font-bold text-gray-900 mb-2">Mes Tâches</h1>
-              <p class="text-gray-600">Gérez vos tâches efficacement</p>
-            </div>
-            
-            <!-- Bouton d'ajout principal - visible sur desktop -->
-            <button 
-              @click="openCreateModal" 
-              class="hidden sm:flex btn btn-primary px-6 py-3 text-base font-semibold"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-              </svg>
-              Nouvelle tâche
-            </button>
-          </div>
-
-          <!-- Statistiques en cards -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-blue-100 text-sm font-medium">Total</p>
-                  <p class="text-2xl font-bold">{{ tasksStore.tasksCount }}</p>
-                </div>
-                <div class="bg-blue-400 bg-opacity-30 rounded-lg p-2">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <div class="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl p-4 text-white">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-yellow-100 text-sm font-medium">En cours</p>
-                  <p class="text-2xl font-bold">{{ tasksStore.pendingTasks.length }}</p>
-                </div>
-                <div class="bg-yellow-400 bg-opacity-30 rounded-lg p-2">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-4 text-white">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-green-100 text-sm font-medium">Terminées</p>
-                  <p class="text-2xl font-bold">{{ tasksStore.completedTasksCount }}</p>
-                </div>
-                <div class="bg-green-400 bg-opacity-30 rounded-lg p-2">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Filtres et recherche -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <div class="bg-white rounded-xl shadow-card p-6 mb-6">
-        <!-- Barre de recherche moderne -->
-        <div class="relative mb-4">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Rechercher une tâche..."
-            class="input pl-10 pr-4 py-3 text-base"
-          />
-        </div>
-        
-        <!-- Filtres -->
-        <div class="flex flex-col sm:flex-row gap-4">
-          <select v-model="filterStatus" class="input">
-            <option value="all">Toutes les tâches</option>
-            <option value="pending">En cours</option>
-            <option value="completed">Terminées</option>
-          </select>
-          
-          <select v-model="filterPriority" class="input">
-            <option value="all">Toutes les priorités</option>
-            <option value="urgent">Urgente</option>
-            <option value="high">Élevée</option>
-            <option value="medium">Moyenne</option>
-            <option value="low">Faible</option>
-          </select>
-          
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="flex justify-between items-center">
+          <h1 class="text-3xl font-bold text-gray-900">Mes Tâches</h1>
           <button 
-            v-if="hasActiveFilters" 
-            @click="clearFilters" 
-            class="btn btn-outline whitespace-nowrap"
+            @click="openCreateModal" 
+            class="bg-blau-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
-            Effacer les filtres
+            <span>Nouvelle tâche</span>
           </button>
-        </div>
-      </div>
-
-      <!-- Liste des tâches -->
-      <div class="space-y-4">
-        <!-- État de chargement -->
-        <div v-if="tasksStore.loading && !tasksStore.tasks.length" class="text-center py-12">
-          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-          <p class="mt-4 text-gray-600">Chargement des tâches...</p>
-        </div>
-
-        <!-- État vide -->
-        <div v-else-if="!filteredTasks.length && !tasksStore.loading" class="text-center py-12">
-          <div class="mx-auto h-24 w-24 text-gray-400 mb-4">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-          </div>
-          <h3 class="text-lg font-medium text-gray-900 mb-2">
-            {{ tasksStore.tasks.length === 0 ? 'Aucune tâche pour le moment' : 'Aucune tâche trouvée' }}
-          </h3>
-          <p class="text-gray-600 mb-6">
-            {{ tasksStore.tasks.length === 0 
-                ? 'Commencez par créer votre première tâche !' 
-                : 'Essayez de modifier vos filtres de recherche.' }}
-          </p>
-          <button v-if="tasksStore.tasks.length === 0" @click="openCreateModal" class="btn btn-primary">
-            Créer ma première tâche
-          </button>
-        </div>
-
-        <!-- Grille de tâches responsive -->
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <TransitionGroup name="slide-up" tag="div" class="contents">
-            <TaskCard
-              v-for="task in filteredTasks"
-              :key="task.id"
-              :task="task"
-              @edit="editTask"
-              @delete="deleteTask"
-              @toggle-complete="onTaskToggle"
-              class="animate-slide-up"
-            />
-          </TransitionGroup>
         </div>
       </div>
     </div>
 
-    <!-- Bouton flottant pour mobile -->
-    <button 
-      @click="openCreateModal"
-      class="fixed bottom-6 right-6 sm:hidden bg-primary-600 hover:bg-primary-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 z-40"
-    >
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-      </svg>
-    </button>
+    <!-- Tasks Table -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Loading State -->
+      <div v-if="tasksStore.loading && !tasksStore.tasks.length" class="text-center py-12">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+        <p class="mt-4 text-gray-600">Chargement des tâches...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div v-else-if="!tasksStore.tasks.length" class="text-center py-12">
+        <div class="mx-auto h-24 w-24 text-gray-400 mb-4">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune tâche pour le moment</h3>
+        <p class="text-gray-600 mb-6">Commencez par créer votre première tâche !</p>
+        <button @click="openCreateModal" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
+          Créer ma première tâche
+        </button>
+      </div>
+
+      <!-- Tasks Table -->
+      <div v-else class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Titre
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Description
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Priorité
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Date limite
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr v-for="task in tasksStore.tasks" :key="task.id" class="hover:bg-gray-50">
+              <!-- Status -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <button
+                  @click="toggleTaskStatus(task.id)"
+                  :class="[
+                    'flex items-center justify-center w-6 h-6 rounded-full border-2 transition-all duration-200',
+                    task.completed 
+                      ? 'bg-green-500 border-green-500 text-white' 
+                      : 'border-gray-300 hover:border-green-500'
+                  ]"
+                >
+                  <svg v-if="task.completed" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </td>
+
+              <!-- Title -->
+              <td class="px-6 py-4">
+                <div :class="['font-medium', task.completed ? 'text-gray-500 line-through' : 'text-gray-900']">
+                  {{ task.title }}
+                </div>
+              </td>
+
+              <!-- Description -->
+              <td class="px-6 py-4">
+                <div :class="['text-sm max-w-xs truncate', task.completed ? 'text-gray-400' : 'text-gray-600']">
+                  {{ task.description || '-' }}
+                </div>
+              </td>
+
+              <!-- Priority -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span :class="[
+                  'inline-flex px-2 py-1 text-xs font-medium rounded-full',
+                  {
+                    'bg-red-100 text-red-800': task.priority === 'urgent',
+                    'bg-orange-100 text-orange-800': task.priority === 'high',
+                    'bg-yellow-100 text-yellow-800': task.priority === 'medium',
+                    'bg-green-100 text-green-800': task.priority === 'low'
+                  }
+                ]">
+                  {{ getPriorityLabel(task.priority) }}
+                </span>
+              </td>
+
+              <!-- Due Date -->
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                {{ task.due_date ? formatDate(task.due_date) : '-' }}
+              </td>
+
+              <!-- Actions -->
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <div class="flex space-x-2">
+                  <button
+                    @click="editTask(task)"
+                    class="text-primary-600 hover:text-primary-900 transition-colors duration-200"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  <button
+                    @click="deleteTask(task.id)"
+                    class="text-red-600 hover:text-red-900 transition-colors duration-200"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
     <!-- Modal de création/édition -->
     <TaskForm
@@ -181,7 +153,7 @@
       @task-saved="onTaskSaved"
     />
 
-    <!-- Notifications toast modernes -->
+    <!-- Toast notifications -->
     <div class="fixed top-4 right-4 z-50 space-y-2">
       <TransitionGroup name="slide-down" tag="div">
         <div
@@ -200,7 +172,7 @@
           <div class="flex items-start">
             <div class="flex-shrink-0">
               <div :class="[
-                'w-5 h-5 rounded-full flex items-center justify-center text-white text-xs',
+                'w-4 h-4 rounded-full flex items-center justify-center text-white text-xs',
                 {
                   'bg-green-400': toast.type === 'success',
                   'bg-red-400': toast.type === 'error', 
@@ -227,26 +199,22 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useTasksStore } from '../stores/tasks'
-import TaskCard from '../components/TaskCard.vue'
 import TaskForm from '../components/TaskForm.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const tasksStore = useTasksStore()
 
-// État du composant - Variables réactives pour gérer l'interface
+// État du composant
 const showTaskModal = ref(false)
 const selectedTask = ref(null)
-const searchQuery = ref('')
-const filterStatus = ref('all')
-const filterPriority = ref('all')
 const toasts = ref([])
 
-// Vérification de l'authentification avant d'accéder aux tâches
+// Vérification de l'authentification
 const checkAuth = () => {
   if (!authStore.isAuthenticated) {
     router.push('/login')
@@ -255,43 +223,7 @@ const checkAuth = () => {
   return true
 }
 
-// Computed - Filtrage intelligent des tâches basé sur la recherche et les filtres
-const filteredTasks = computed(() => {
-  let tasks = tasksStore.tasks
-
-  // Filtrage par recherche textuelle (titre et description)
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    tasks = tasks.filter(task =>
-      task.title.toLowerCase().includes(query) ||
-      (task.description && task.description.toLowerCase().includes(query))
-    )
-  }
-
-  // Filtrage par statut (terminé/en cours)
-  if (filterStatus.value !== 'all') {
-    tasks = tasks.filter(task => {
-      if (filterStatus.value === 'completed') return task.completed
-      if (filterStatus.value === 'pending') return !task.completed
-      return true
-    })
-  }
-
-  // Filtrage par niveau de priorité
-  if (filterPriority.value !== 'all') {
-    tasks = tasks.filter(task => task.priority === filterPriority.value)
-  }
-
-  // Tri par date de création (plus récent en premier)
-  return tasks.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-})
-
-// Vérification si des filtres sont actifs pour afficher le bouton de réinitialisation
-const hasActiveFilters = computed(() => {
-  return searchQuery.value || filterStatus.value !== 'all' || filterPriority.value !== 'all'
-})
-
-// Gestion des tâches - Actions principales
+// Gestion des tâches
 const loadTasks = async () => {
   if (!checkAuth()) return
   
@@ -303,20 +235,19 @@ const loadTasks = async () => {
   }
 }
 
-// Ouverture du modal pour créer une nouvelle tâche
 const openCreateModal = () => {
   selectedTask.value = null
   showTaskModal.value = true
 }
 
-// Ouverture du modal pour éditer une tâche existante
 const editTask = (task) => {
   selectedTask.value = task
   showTaskModal.value = true
 }
 
-// Suppression d'une tâche avec gestion d'erreur
 const deleteTask = async (taskId) => {
+  if (!confirm('Êtes-vous sûr de vouloir supprimer cette tâche ?')) return
+  
   try {
     await tasksStore.deleteTask(taskId)
     showToast('Tâche supprimée avec succès', 'success')
@@ -326,36 +257,45 @@ const deleteTask = async (taskId) => {
   }
 }
 
-// Gestion du changement de statut des tâches
-const onTaskToggle = (taskId) => {
-  const task = tasksStore.tasks.find(t => t.id === taskId)
-  if (task) {
-    const message = task.completed ? 'Tâche marquée comme terminée' : 'Tâche marquée comme en cours'
+const toggleTaskStatus = async (taskId) => {
+  try {
+    await tasksStore.toggleTaskStatus(taskId)
+    const task = tasksStore.tasks.find(t => t.id === taskId)
+    const message = task?.completed ? 'Tâche marquée comme terminée' : 'Tâche marquée comme en cours'
     showToast(message, 'info')
+  } catch (error) {
+    console.error('Erreur lors du changement de statut:', error)
+    showToast('Erreur lors du changement de statut', 'error')
   }
 }
 
-// Fermeture du modal de création/édition
 const closeTaskModal = () => {
   showTaskModal.value = false
   selectedTask.value = null
 }
 
-// Callback après sauvegarde d'une tâche
 const onTaskSaved = (event) => {
   const { action } = event
   const message = action === 'created' ? 'Tâche créée avec succès' : 'Tâche modifiée avec succès'
   showToast(message, 'success')
 }
 
-// Réinitialisation de tous les filtres
-const clearFilters = () => {
-  searchQuery.value = ''
-  filterStatus.value = 'all'
-  filterPriority.value = 'all'
+// Utilitaires
+const getPriorityLabel = (priority) => {
+  const labels = {
+    urgent: 'Urgente',
+    high: 'Élevée',
+    medium: 'Moyenne',
+    low: 'Faible'
+  }
+  return labels[priority] || priority
 }
 
-// Système de notifications toast - Affichage des messages temporaires
+const formatDate = (dateString) => {
+  return new Date(dateString).toLocaleDateString('fr-FR')
+}
+
+// Système de notifications toast
 const showToast = (message, type = 'info') => {
   const toast = {
     id: Date.now() + Math.random(),
@@ -365,13 +305,11 @@ const showToast = (message, type = 'info') => {
   
   toasts.value.push(toast)
   
-  // Suppression automatique après 4 secondes
   setTimeout(() => {
     removeToast(toast.id)
   }, 4000)
 }
 
-// Suppression manuelle d'un toast
 const removeToast = (toastId) => {
   const index = toasts.value.findIndex(toast => toast.id === toastId)
   if (index > -1) {
@@ -379,7 +317,6 @@ const removeToast = (toastId) => {
   }
 }
 
-// Icônes pour les différents types de toast
 const getToastIcon = (type) => {
   const icons = {
     success: '✓',
@@ -395,7 +332,6 @@ onMounted(() => {
   loadTasks()
 })
 
-// Watcher pour recharger les tâches si l'utilisateur se connecte
 watch(() => authStore.isAuthenticated, (newValue) => {
   if (newValue) {
     loadTasks()

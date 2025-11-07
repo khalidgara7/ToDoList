@@ -15,6 +15,20 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
+    // Vérifier l'état d'authentification au démarrage de l'application
+    async checkAuthState() {
+      const token = localStorage.getItem('token')
+      if (token) {
+        this.token = token
+        try {
+          await this.fetchUser()
+        } catch (error) {
+          console.error('Token invalide, déconnexion automatique:', error)
+          this.logout()
+        }
+      }
+    },
+
     async register(userData) {
       this.loading = true
       this.error = null
@@ -70,7 +84,16 @@ export const useAuthStore = defineStore('auth', {
       try {
         const response = await axios.post('/login', credentials)
         
-        if (response.data.token) {
+        // Handle the response structure from your backend
+        if (response.data.status === 'success' && response.data.authorisation) {
+          this.token = response.data.authorisation.token
+          this.user = response.data.user
+          localStorage.setItem('token', this.token)
+          
+          // Initialiser les notifications Echo après la connexion
+          this.initializeNotifications()
+        } else if (response.data.token) {
+          // Fallback for different response structure
           this.token = response.data.token
           this.user = response.data.user
           localStorage.setItem('token', this.token)

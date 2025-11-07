@@ -2,19 +2,12 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import Login from '../pages/Login.vue'
 import Register from '../pages/Register.vue'
-import Home from '../pages/Home.vue'
 import Tasks from '../pages/Tasks.vue'
 import Notifications from '../pages/Notifications.vue'
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/tasks',
     name: 'Tasks',
     component: Tasks,
     meta: { requiresAuth: true }
@@ -67,8 +60,8 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next('/login')
   } else if (to.meta.guest && authStore.isAuthenticated) {
-    // Rediriger vers les tâches si l'utilisateur est déjà connecté
-    next('/tasks')
+    // Rediriger vers la page d'accueil (Tasks) si l'utilisateur est déjà connecté
+    next('/')
   } else {
     next()
   }

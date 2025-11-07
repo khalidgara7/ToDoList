@@ -1,113 +1,162 @@
 <template>
-  <div class="auth-container">
-    <div class="auth-card">
-      <h2>Inscription</h2>
-      
-      <form @submit.prevent="handleSubmit" class="auth-form">
-        <div class="form-group">
-          <label for="full_name">Nom complet *</label>
-          <input
-            id="full_name"
-            v-model="form.full_name"
-            type="text"
-            :class="{ error: errors.full_name }"
-            @blur="validateField('full_name')"
-          />
-          <span v-if="errors.full_name" class="error-message">{{ errors.full_name }}</span>
-        </div>
-
-        <div class="form-group">
-          <label for="email">Email *</label>
-          <input
-            id="email"
-            v-model="form.email"
-            type="email"
-            :class="{ error: errors.email }"
-            @blur="validateField('email')"
-          />
-          <span v-if="errors.email" class="error-message">{{ errors.email }}</span>
-        </div>
-
-        <div class="form-group">
-          <label for="phone_number">Téléphone *</label>
-          <input
-            id="phone_number"
-            v-model="form.phone_number"
-            type="tel"
-            :class="{ error: errors.phone_number }"
-            @blur="validateField('phone_number')"
-          />
-          <span v-if="errors.phone_number" class="error-message">{{ errors.phone_number }}</span>
-        </div>
-
-        <div class="form-group">
-          <label for="address">Adresse *</label>
-          <textarea
-            id="address"
-            v-model="form.address"
-            :class="{ error: errors.address }"
-            @blur="validateField('address')"
-            rows="3"
-          ></textarea>
-          <span v-if="errors.address" class="error-message">{{ errors.address }}</span>
-        </div>
-
-        <div class="form-group">
-          <label for="image">Photo de profil</label>
-          <input
-            id="image"
-            type="file"
-            accept="image/*"
-            @change="handleImageUpload"
-            :class="{ error: errors.image }"
-          />
-          <span v-if="errors.image" class="error-message">{{ errors.image }}</span>
-          <div v-if="imagePreview" class="image-preview">
-            <img :src="imagePreview" alt="Preview" />
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-8">
+    <div class="w-full max-w-lg">
+      <div class="bg-white rounded-xl shadow-lg p-8">
+        <h2 class="text-3xl font-bold text-center text-gray-900 mb-8">Inscription</h2>
+        
+        <form @submit.prevent="handleSubmit" class="space-y-6">
+          <div>
+            <label for="full_name" class="block text-sm font-medium text-gray-700 mb-2">
+              Nom complet *
+            </label>
+            <input
+              id="full_name"
+              v-model="form.full_name"
+              type="text"
+              placeholder="Votre nom complet"
+              :class="[
+                'w-full px-4 py-3 border rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+                errors.full_name ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:border-primary-500'
+              ]"
+              @blur="validateField('full_name')"
+            />
+            <p v-if="errors.full_name" class="mt-2 text-sm text-red-600">{{ errors.full_name }}</p>
           </div>
+
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+              Email *
+            </label>
+            <input
+              id="email"
+              v-model="form.email"
+              type="email"
+              placeholder="votre@email.com"
+              :class="[
+                'w-full px-4 py-3 border rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+                errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:border-primary-500'
+              ]"
+              @blur="validateField('email')"
+            />
+            <p v-if="errors.email" class="mt-2 text-sm text-red-600">{{ errors.email }}</p>
+          </div>
+
+          <div>
+            <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-2">
+              Téléphone *
+            </label>
+            <input
+              id="phone_number"
+              v-model="form.phone_number"
+              type="tel"
+              placeholder="+33 6 12 34 56 78"
+              :class="[
+                'w-full px-4 py-3 border rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+                errors.phone_number ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:border-primary-500'
+              ]"
+              @blur="validateField('phone_number')"
+            />
+            <p v-if="errors.phone_number" class="mt-2 text-sm text-red-600">{{ errors.phone_number }}</p>
+          </div>
+
+          <div>
+            <label for="address" class="block text-sm font-medium text-gray-700 mb-2">
+              Adresse *
+            </label>
+            <textarea
+              id="address"
+              v-model="form.address"
+              placeholder="Votre adresse complète"
+              rows="3"
+              :class="[
+                'w-full px-4 py-3 border rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none',
+                errors.address ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:border-primary-500'
+              ]"
+              @blur="validateField('address')"
+            ></textarea>
+            <p v-if="errors.address" class="mt-2 text-sm text-red-600">{{ errors.address }}</p>
+          </div>
+
+          <div>
+            <label for="image" class="block text-sm font-medium text-gray-700 mb-2">
+              Photo de profil
+            </label>
+            <input
+              id="image"
+              type="file"
+              accept="image/*"
+              @change="handleImageUpload"
+              :class="[
+                'w-full px-4 py-3 border rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100',
+                errors.image ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:border-primary-500'
+              ]"
+            />
+            <p v-if="errors.image" class="mt-2 text-sm text-red-600">{{ errors.image }}</p>
+            <div v-if="imagePreview" class="mt-4 flex justify-center">
+              <img :src="imagePreview" alt="Preview" class="w-24 h-24 rounded-full object-cover border-4 border-primary-100" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                Mot de passe *
+              </label>
+              <input
+                id="password"
+                v-model="form.password"
+                type="password"
+                placeholder="Minimum 6 caractères"
+                :class="[
+                  'w-full px-4 py-3 border rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+                  errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:border-primary-500'
+                ]"
+                @blur="validateField('password')"
+              />
+              <p v-if="errors.password" class="mt-2 text-sm text-red-600">{{ errors.password }}</p>
+            </div>
+
+            <div>
+              <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-2">
+                Confirmer *
+              </label>
+              <input
+                id="confirmPassword"
+                v-model="form.confirmPassword"
+                type="password"
+                placeholder="Répéter le mot de passe"
+                :class="[
+                  'w-full px-4 py-3 border rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+                  errors.confirmPassword ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:border-primary-500'
+                ]"
+                @blur="validateField('confirmPassword')"
+              />
+              <p v-if="errors.confirmPassword" class="mt-2 text-sm text-red-600">{{ errors.confirmPassword }}</p>
+            </div>
+          </div>
+
+          <div v-if="authStore.error" class="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p class="text-sm text-red-600 text-center">{{ authStore.error }}</p>
+          </div>
+
+          <button 
+            type="submit" 
+            :disabled="authStore.loading || !isFormValid"
+            class="w-full bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+          >
+            {{ authStore.loading ? 'Inscription...' : 'S\'inscrire' }}
+          </button>
+        </form>
+
+        <div class="mt-8 text-center">
+          <p class="text-sm text-gray-600">
+            Déjà un compte ? 
+            <router-link to="/login" class="text-primary-600 hover:text-primary-700 font-medium">
+              Se connecter
+            </router-link>
+          </p>
         </div>
-
-        <div class="form-group">
-          <label for="password">Mot de passe *</label>
-          <input
-            id="password"
-            v-model="form.password"
-            type="password"
-            :class="{ error: errors.password }"
-            @blur="validateField('password')"
-          />
-          <span v-if="errors.password" class="error-message">{{ errors.password }}</span>
-        </div>
-
-        <div class="form-group">
-          <label for="confirmPassword">Confirmer le mot de passe *</label>
-          <input
-            id="confirmPassword"
-            v-model="form.confirmPassword"
-            type="password"
-            :class="{ error: errors.confirmPassword }"
-            @blur="validateField('confirmPassword')"
-          />
-          <span v-if="errors.confirmPassword" class="error-message">{{ errors.confirmPassword }}</span>
-        </div>
-
-        <div v-if="authStore.error" class="error-message global-error">
-          {{ authStore.error }}
-        </div>
-
-        <button 
-          type="submit" 
-          class="auth-button"
-          :disabled="authStore.loading || !isFormValid"
-        >
-          {{ authStore.loading ? 'Inscription...' : 'S\'inscrire' }}
-        </button>
-      </form>
-
-      <p class="auth-link">
-        Déjà un compte ? 
-        <router-link to="/login">Se connecter</router-link>
-      </p>
+      </div>
     </div>
   </div>
 </template>
@@ -309,129 +358,3 @@ onMounted(async () => {
   }
 })
 </script>
-
-<style scoped>
-.auth-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
-}
-
-.auth-card {
-  background: white;
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 500px;
-}
-
-.auth-card h2 {
-  text-align: center;
-  margin-bottom: 30px;
-  color: #333;
-  font-size: 28px;
-  font-weight: 600;
-}
-
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: #555;
-}
-
-.form-group input,
-.form-group textarea {
-  padding: 12px;
-  border: 2px solid #e1e5e9;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 0.3s ease;
-}
-
-.form-group input:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
-.form-group input.error,
-.form-group textarea.error {
-  border-color: #e74c3c;
-}
-
-.error-message {
-  color: #e74c3c;
-  font-size: 14px;
-  margin-top: 5px;
-}
-
-.global-error {
-  text-align: center;
-  padding: 10px;
-  background: #fee;
-  border-radius: 4px;
-}
-
-.image-preview {
-  margin-top: 10px;
-}
-
-.image-preview img {
-  max-width: 150px;
-  max-height: 150px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.auth-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  padding: 15px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.auth-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-}
-
-.auth-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.auth-link {
-  text-align: center;
-  margin-top: 20px;
-  color: #666;
-}
-
-.auth-link a {
-  color: #667eea;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.auth-link a:hover {
-  text-decoration: underline;
-}
-</style>
